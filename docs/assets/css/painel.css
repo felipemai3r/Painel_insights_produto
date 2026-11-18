@@ -1,0 +1,140 @@
+/* Entrada (login), leitura da IA, execuções e carregamento. Usa só tokens do Arrow (arrow-style.css); não escreva cor ou medida solta. */
+/* ---------- peça 6: entrada, IA, execuções, carregamento ---------- */
+.login {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-layout-lg) 0
+}
+
+.login .card {
+  width: min(100%, calc(var(--space-96) * 5));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-component-lg)
+}
+
+.check {
+  display: flex;
+  gap: var(--space-component-sm);
+  align-items: center;
+  color: var(--color-content-secondary)
+}
+
+.check input {
+  width: var(--space-16);
+  height: var(--space-16);
+  accent-color: var(--color-action-primary)
+}
+
+.ia {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-component-lg)
+}
+
+.ia .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-component-xs);
+  align-items: center
+}
+
+.ia h4 {
+  color: var(--color-content-secondary);
+  margin-bottom: var(--space-component-xs)
+}
+
+.ia .casos li {
+  display: flex;
+  gap: var(--space-component-sm);
+  align-items: baseline
+}
+
+.ia-geral {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-component-xl)
+}
+
+@media (max-width:900px) {
+  .ia-geral {
+    grid-template-columns: minmax(0, 1fr)
+  }
+}
+
+.toolbar {
+  display: flex;
+  gap: var(--space-component-sm);
+  flex-wrap: wrap;
+  align-items: center
+}
+
+.spin {
+  width: var(--space-16);
+  height: var(--space-16);
+  border-radius: var(--shape-feedback-pill);
+  border: 2px solid var(--color-border-default);
+  border-top-color: var(--color-action-primary);
+  animation: gira 800ms linear infinite;
+  flex: none
+}
+
+@keyframes gira {
+  to {
+    transform: rotate(360deg)
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation: none
+  }
+}
+
+.loading {
+  display: flex;
+  gap: var(--space-component-md);
+  align-items: center;
+  color: var(--color-content-secondary)
+}
+
+.execs td {
+  white-space: nowrap
+}
+
+.execs td.obs {
+  white-space: normal;
+  max-width: calc(var(--space-96) * 4);
+  color: var(--color-content-secondary)
+}
+
+.execs tbody tr {
+  cursor: default
+}
+
+.tks a {
+  color: var(--color-content-accent);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none
+}
+
+.tks a:hover {
+  text-decoration: underline
+}
+
+.notice a {
+  color: inherit;
+  text-decoration: underline
+}
+
+@media (max-width:600px) {
+  .top .wrap {
+    flex-wrap: wrap;
+    padding-top: var(--space-component-sm);
+    padding-bottom: var(--space-component-sm)
+  }
+
+  .actions {
+    flex-wrap: wrap
+  }
+}

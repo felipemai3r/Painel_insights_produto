@@ -1,0 +1,169 @@
+/* Gaveta do caso e tooltip. Usa só tokens do Arrow (arrow-style.css); não escreva cor ou medida solta. */
+/* ---------- gaveta do caso ---------- */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--color-surface-inverted);
+  opacity: 0;
+  pointer-events: none;
+  z-index: var(--z-backdrop);
+  transition-property: opacity;
+  transition-duration: var(--motion-duration-transition-exit);
+  transition-timing-function: var(--motion-easing-exit)
+}
+
+.backdrop.open {
+  opacity: .4;
+  pointer-events: auto;
+  transition-duration: var(--motion-duration-transition-enter);
+  transition-timing-function: var(--motion-easing-enter)
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(100%, calc(var(--grid-container-narrow) + var(--space-96)));
+  background: var(--color-surface-base);
+  box-shadow: var(--elevation-overlay-drawer);
+  z-index: var(--z-modal);
+  transform: translateX(100%);
+  visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--shape-container-lg) 0 0 var(--shape-container-lg);
+  transition-property: transform, visibility;
+  transition-duration: var(--motion-duration-transition-exit);
+  transition-timing-function: var(--motion-easing-exit)
+}
+
+.drawer.open {
+  transform: none;
+  visibility: visible;
+  transition-duration: var(--motion-duration-transition-enter);
+  transition-timing-function: var(--motion-easing-enter)
+}
+
+[data-theme="dark"] .drawer {
+  border-left: 1px solid var(--color-border-default)
+}
+
+.drawer header {
+  display: flex;
+  gap: var(--space-component-md);
+  align-items: flex-start;
+  padding: var(--space-component-xl);
+  border-bottom: 1px solid var(--color-border-default)
+}
+
+.drawer header>div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-component-sm)
+}
+
+.drawer .body {
+  overflow-y: auto;
+  padding: var(--space-component-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-layout-xs)
+}
+
+.dsec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-component-sm)
+}
+
+.dsec h3 {
+  color: var(--color-content-secondary)
+}
+
+.kv {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-component-xs) var(--space-component-lg)
+}
+
+.kv dt {
+  color: var(--color-content-tertiary)
+}
+
+.kv dd {
+  margin: 0
+}
+
+.tks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-component-sm)
+}
+
+.tks li {
+  padding: var(--space-component-md);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--shape-container-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-component-xs)
+}
+
+.tks .l1 {
+  display: flex;
+  gap: var(--space-component-sm);
+  align-items: center;
+  flex-wrap: wrap
+}
+
+.other {
+  border-left: var(--space-4) solid var(--color-feedback-warning);
+  padding-left: var(--space-component-md)
+}
+
+/* ---------- tooltip ---------- */
+.tip {
+  position: fixed;
+  z-index: var(--z-popover);
+  pointer-events: none;
+  background: var(--color-surface-inverted);
+  color: var(--color-content-inverted);
+  padding: var(--space-component-sm) var(--space-component-md);
+  border-radius: var(--shape-container-sm);
+  box-shadow: var(--elevation-overlay-popover);
+  font-size: var(--type-body-xs-size);
+  line-height: var(--type-body-xs-line-height);
+  max-width: calc(var(--space-64) * 4);
+  white-space: pre-line;
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: var(--motion-duration-transition-exit)
+}
+
+.tip.on {
+  opacity: 1;
+  transition-duration: var(--motion-duration-transition-enter)
+}
+
+footer {
+  margin: var(--space-structural-sm) 0 var(--space-layout-md);
+  color: var(--color-content-tertiary)
+}
+
+.empty {
+  padding: var(--space-layout-sm);
+  text-align: center;
+  color: var(--color-content-tertiary)
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0ms !important
+  }
+}

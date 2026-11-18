@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Demandas do suporte</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/arrow-style.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/componentes.css">
+  <link rel="stylesheet" href="assets/css/gaveta.css">
+  <link rel="stylesheet" href="assets/css/painel.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!--
+  Página da v1 (peça 6, 12/11/2026). Código em assets/css e assets/js (sem build: scripts clássicos, na ordem abaixo). Este arquivo NÃO tem dados: tudo chega do webhook do N8N
+  ("Produtos tkt - Leitura v1"), com o token de cada pessoa. #demo abre com dados fictícios.
+-->
+</head>
+
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-download" viewBox="0 0 24 24">
+      <path d="M12 3v12m0 0-5-5m5 5 5-5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4" />
+    </symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24">
+      <path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5" />
+    </symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+    </symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+    </symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+    </symbol>
+    <symbol id="i-x" viewBox="0 0 24 24">
+      <path d="M18 6 6 18M6 6l12 12" />
+    </symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24">
+      <path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4m0-4h.01" />
+    </symbol>
+    <symbol id="i-external" viewBox="0 0 24 24">
+      <path d="M14 4h6v6M20 4 10 14M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+    </symbol>
+  </svg>
+
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">
+        <span class="t-heading-sm">Demandas do suporte</span>
+        <small class="t-label-md" id="sub">Effecti · visão para Produto</small>
+      </div>
+      <div class="actions">
+        <button class="btn btn-ghost" id="btnAtualizar" type="button" hidden><svg class="ico sm">
+            <use href="#i-refresh" />
+          </svg><span>Atualizar</span></button>
+        <button class="btn btn-ghost btn-icon" id="btnSair" type="button" aria-label="Sair (esquecer o token)"
+          data-tip="Sair (esquecer o token)" hidden><svg class="ico">
+            <use href="#i-logout" />
+          </svg></button>
+        <button class="btn btn-ghost btn-icon" id="btnTema" type="button" aria-label="Alternar tema claro e escuro"><svg
+            class="ico">
+            <use href="#i-moon" />
+          </svg></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap login" id="telaLogin">
+    <form class="card" id="formLogin" autocomplete="off">
+      <div>
+        <h1 class="t-heading-md">Entrar</h1>
+        <p class="t-body-sm c2" style="margin-top:var(--space-component-xs)">Use o token que o Felipe gerou para você.
+          Ele vale só para você e pode ser revogado.</p>
+      </div>
+      <label class="field"><span class="t-label-md">Token</span><input class="input" id="inToken" type="password"
+          required></label>
+      <label class="check t-body-sm"><input type="checkbox" id="inLembrar"> Lembrar neste navegador</label>
+      <div id="erroLogin" class="notice err t-body-sm" role="alert" hidden></div>
+      <button class="btn btn-primary" type="submit" id="btnEntrar">Entrar</button>
+    </form>
+  </main>
+
+  <main class="wrap" id="telaApp" hidden>
+    <div id="aviso" class="notice t-body-sm" role="status" hidden></div>
+
+    <div class="filters" role="group" aria-label="Filtros">
+      <div class="field"><span class="t-label-md" id="lblEscala">Escala</span>
+        <div class="seg" id="segEscala" role="group" aria-labelledby="lblEscala"></div>
+      </div>
+      <label class="field"><span class="t-label-md">Período</span>
+        <select class="select" id="selPeriodo"></select></label>
+      <div class="field"><span class="t-label-md" id="lblMedida">Contar por</span>
+        <div class="seg" id="segMedida" role="group" aria-labelledby="lblMedida"></div>
+      </div>
+    </div>
+
+    <section class="section" aria-labelledby="hGeral">
+      <div class="section-head">
+        <h1 class="t-heading-lg" id="hGeral">Visão geral</h1><span class="t-body-sm c2" id="subGeral"></span>
+      </div>
+      <div class="kpis" id="kpis"></div>
+      <div class="card" id="iaGeral" style="margin-top:var(--space-component-lg)"></div>
+    </section>
+
+    <section class="section" aria-labelledby="hEtapas">
+      <div class="section-head">
+        <h2 class="t-heading-md" id="hEtapas">Etapas</h2>
+        <div class="toolbar"><span class="t-body-sm c3">Um caso em várias etapas conta em cada uma. Escolha uma etapa
+            para detalhar.</span>
+          <button class="btn btn-secondary" id="btnExpTopicos" type="button"><svg class="ico sm">
+              <use href="#i-download" />
+            </svg><span>Exportar tópicos</span></button>
+        </div>
+      </div>
+      <div class="etapas" id="etapas"></div>
+    </section>
+
+    <section class="section" aria-labelledby="hEtapa">
+      <div class="section-head">
+        <h2 class="t-heading-md" id="hEtapa"></h2><span class="t-body-sm c3" id="subEtapa"></span>
+      </div>
+      <div class="grid2">
+        <div class="card stack">
+          <div class="section-head" style="margin:0">
+            <h3 class="t-heading-sm">Top 5 tópicos</h3><span class="t-body-xs c3" id="subTop"></span>
+          </div>
+          <ol class="bars" id="top5"></ol>
+        </div>
+        <div class="card stack">
+          <div class="section-head" style="margin:0">
+            <h3 class="t-heading-sm">Cadência</h3><span class="t-body-xs c3" id="subCad"></span>
+          </div>
+          <div class="chart" id="cadencia"></div>
+          <p class="t-body-sm c2" id="emAlta"></p>
+        </div>
+      </div>
+      <div class="grid2" style="margin-top:var(--space-component-lg)">
+        <div class="card stack" id="iaEtapa"></div>
+        <div class="card stack">
+          <div class="section-head" style="margin:0">
+            <h3 class="t-heading-sm">Observações dos casos</h3><span class="t-body-xs c3" id="subSinais"></span>
+          </div>
+          <ul class="signals" id="sinais"></ul>
+          <nav class="pager" id="pagSinais" aria-label="Páginas das observações" hidden>
+            <button class="btn btn-secondary" id="sinAnt" type="button">Anterior</button>
+            <span class="t-body-xs c2 num" id="sinPos" aria-live="polite"></span>
+            <button class="btn btn-secondary" id="sinProx" type="button">Próxima</button>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="hCasos">
+      <div class="section-head">
+        <h2 class="t-heading-md" id="hCasos">Casos</h2><span class="t-body-sm c3" id="subCasos"></span>
+      </div>
+      <div class="tablebar">
+        <label class="sr" for="busca">Buscar nos casos</label>
+        <input class="input" id="busca" type="search"
+          placeholder="Buscar por dor, empresa, tópico, portal ou nº do caso">
+        <span id="chipTopico"></span>
+        <button class="btn btn-secondary" id="btnExpCasos" type="button"><svg class="ico sm">
+            <use href="#i-download" />
+          </svg><span>Exportar casos</span></button>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Caso</th>
+              <th scope="col">Fechado em</th>
+              <th scope="col">Tópico</th>
+              <th scope="col">Empresa</th>
+              <th scope="col">Portal</th>
+              <th scope="col">Dor</th>
+              <th scope="col">Confiança</th>
+              <th scope="col">Tickets</th>
+            </tr>
+          </thead>
+          <tbody id="tbCasos"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:var(--space-component-md)"><button class="btn btn-secondary" id="btnMais" type="button"
+          hidden>Mostrar mais</button></div>
+    </section>
+
+    <section class="section" aria-labelledby="hExec">
+      <div class="section-head">
+        <h2 class="t-heading-md" id="hExec">Execuções</h2><span class="t-body-sm c3" id="subExec"></span>
+      </div>
+      <div class="tablewrap execs">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Fluxo</th>
+              <th scope="col">Início</th>
+              <th scope="col">Duração</th>
+              <th scope="col">Status</th>
+              <th scope="col">Janela</th>
+              <th scope="col">Gravados</th>
+              <th scope="col">Erros</th>
+              <th scope="col">Restantes</th>
+              <th scope="col">Observação</th>
+            </tr>
+          </thead>
+          <tbody id="tbExec"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="t-body-xs" id="rodape"></footer>
+  </main>
+
+  <div class="backdrop" id="backdrop"></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitulo">
+    <header>
+      <div><span class="t-label-md c3" id="dSup"></span>
+        <h2 class="t-heading-md" id="dTitulo"></h2>
+        <div class="chips" id="dBadges"></div>
+      </div>
+      <button class="btn btn-ghost btn-icon" id="dFechar" type="button" aria-label="Fechar detalhe do caso"><svg
+          class="ico">
+          <use href="#i-x" />
+        </svg></button>
+    </header>
+    <div class="body" id="dBody"></div>
+  </aside>
+  <div class="tip" id="tip" role="tooltip"></div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/constantes.js"></script>
+  <script src="assets/js/utilidades.js"></script>
+  <script src="assets/js/periodos.js"></script>
+  <script src="assets/js/contagem.js"></script>
+  <script src="assets/js/render.js"></script>
+  <script src="assets/js/gaveta.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/webhook.js"></script>
+  <script src="assets/js/cache.js"></script>
+  <script src="assets/js/carga.js"></script>
+  <script src="assets/js/exportacao.js"></script>
+  <script src="assets/js/demo.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+
+</html>
